@@ -33,3 +33,22 @@ pjecz-hercules-cli-typer = "pjecz_hercules_cli_typer:main"
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.black]
+line-length = 128
+
+[tool.isort]
+line_length = 128
+profile = "black"
+
+[tool.basedpyright]
+pythonVersion = "3.14"
+typeCheckingMode = "basic"
+reportCallIssue = "hint"
+reportMissingImports = "warning"
+reportUndefinedVariable = "warning"
+exclude = ["**/tests"]
+
+[tool.ruff]
+ignore = ["F821", "RUF012"]
+line-length = 128
