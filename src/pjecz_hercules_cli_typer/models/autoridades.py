@@ -54,7 +54,7 @@ class Autoridad(Base):
     #edictos: Mapped[list["Edicto"]] = relationship("Edicto", back_populates="autoridad")
     #listas_de_acuerdos: Mapped[list["ListaDeAcuerdo"]] = relationship("ListaDeAcuerdo", back_populates="autoridad")
     #sentencias: Mapped[list["Sentencia"]] = relationship("Sentencia", back_populates="autoridad")
-    #usuarios: Mapped[list["Usuario"]] = relationship("Usuario", back_populates="autoridad")
+    usuarios: Mapped[list["Usuario"]] = relationship("Usuario", back_populates="autoridad")
 
     def __repr__(self):
         """Representación"""
