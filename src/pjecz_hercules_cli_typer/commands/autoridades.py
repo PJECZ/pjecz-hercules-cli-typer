@@ -63,6 +63,8 @@ def consultar(
         .offset(offset)
         .limit(limit)
     )
+
+    # Consultar, agregar a la tabla y mostrar
     with session_scope() as session:
         for item in session.execute(stmt).all():
             tabla.add_row(
