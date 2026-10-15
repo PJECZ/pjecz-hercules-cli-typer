@@ -8,22 +8,40 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
+from pjecz_hercules_cli_typer.core.safe_string import safe_string
 from pjecz_hercules_cli_typer.models.modulos import Modulo
 
 app = Typer(help="Módulos")
 
 
 @app.command()
-def consultar(offset: int = 0, limit: int = 50):
+def consultar(
+    offset: int = 0,
+    limit: int = 50,
+    nombre: str | None = None,
+    en_navegacion: bool | None = None,
+):
     """Consultar módulos"""
     console = Console()
     console.print("Consultando módulos...")
+
+    # Preparar tabla
     tabla = Table(title="Módulos")
     tabla.add_column("Nombre", header_style="green", no_wrap=True)
     tabla.add_column("Nombre corto", header_style="green")
     tabla.add_column("Icono", header_style="green")
     tabla.add_column("Ruta", header_style="green")
     tabla.add_column("En navegación", header_style="green")
+
+    # Cláusulas where
+    where_clauses = [Modulo.estatus == "A"]
+    nombre = safe_string(nombre)
+    if nombre:
+        where_clauses.append(Modulo.nombre.like("%" + nombre + "%"))
+    if en_navegacion is not None:
+        where_clauses.append(Modulo.en_navegacion == en_navegacion)
+
+    # Sentencia
     stmt = (
         select(
             Modulo.nombre,
@@ -32,7 +50,7 @@ def consultar(offset: int = 0, limit: int = 50):
             Modulo.ruta,
             Modulo.en_navegacion,
         )
-        .where(Modulo.estatus == "A")
+        .where(*where_clauses)
         .order_by(Modulo.nombre)
         .offset(offset)
         .limit(limit)
