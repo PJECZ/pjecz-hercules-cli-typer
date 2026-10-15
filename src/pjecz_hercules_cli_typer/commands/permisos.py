@@ -16,7 +16,7 @@ app = Typer(help="Permisos")
 
 
 @app.command()
-def consultar(offset: int = 0, limit: int = 50):
+def consultar(offset: int = 0, limit: int = 25):
     """Consultar permisos"""
     console = Console()
     console.print("Consultando permisos...")

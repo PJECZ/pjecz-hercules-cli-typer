@@ -17,7 +17,7 @@ app = Typer(help="Módulos")
 @app.command()
 def consultar(
     offset: int = 0,
-    limit: int = 50,
+    limit: int = 25,
     nombre: str | None = None,
     en_navegacion: bool | None = None,
 ):

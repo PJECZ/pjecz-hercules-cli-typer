@@ -19,7 +19,7 @@ app = Typer(help="Usuarios")
 @app.command()
 def consultar(
     offset: int = 0,
-    limit: int = 50,
+    limit: int = 25,
     email: str | None = None,
     nombres: str | None = None,
     apellido_paterno: str | None = None,

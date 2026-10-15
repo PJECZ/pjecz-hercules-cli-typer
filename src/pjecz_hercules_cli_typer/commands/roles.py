@@ -14,7 +14,7 @@ app = Typer(help="Roles")
 
 
 @app.command()
-def consultar(offset: int = 0, limit: int = 50):
+def consultar(offset: int = 0, limit: int = 25):
     """Consultar roles"""
     console = Console()
     console.print("Consultando roles...")

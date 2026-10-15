@@ -19,7 +19,7 @@ app = Typer(help="Autoridades")
 @app.command()
 def consultar(
     offset: int = 0,
-    limit: int = 50,
+    limit: int = 25,
     distrito_clave: str | None = None,
     materia_clave: str | None = None,
     descripcion_corta: str | None = None,
