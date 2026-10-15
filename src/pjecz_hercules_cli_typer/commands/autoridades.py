@@ -8,6 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
+from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.distritos import Distrito
 from pjecz_hercules_cli_typer.models.materias import Materia
@@ -16,15 +17,37 @@ app = Typer(help="Autoridades")
 
 
 @app.command()
-def consultar(offset: int = 0, limit: int = 50):
+def consultar(
+    offset: int = 0,
+    limit: int = 50,
+    distrito_clave: str | None = None,
+    materia_clave: str | None = None,
+    descripcion_corta: str | None = None,
+):
     """Consultar autoridades"""
     console = Console()
     console.print("Consultando autoridades...")
+
+    # Preparar tabla
     tabla = Table(title="Autoridades")
     tabla.add_column("Clave", header_style="green", no_wrap=True)
     tabla.add_column("Descripción corta", header_style="green")
     tabla.add_column("Distrito", header_style="green", no_wrap=True)
     tabla.add_column("Materia", header_style="green", no_wrap=True)
+
+    # Cláusulas where
+    where_clauses = [Autoridad.estatus == "A"]
+    distrito_clave = safe_clave(distrito_clave)
+    if distrito_clave:
+        where_clauses.append(Distrito.clave == distrito_clave)
+    materia_clave = safe_clave(materia_clave)
+    if materia_clave:
+        where_clauses.append(Materia.clave == materia_clave)
+    descripcion_corta = safe_string(descripcion_corta)
+    if descripcion_corta is not None:
+        where_clauses.append(Autoridad.descripcion_corta.like("%" + descripcion_corta + "%"))
+
+    # Sentencia
     stmt = (
         select(
             Autoridad.clave,
@@ -35,7 +58,7 @@ def consultar(offset: int = 0, limit: int = 50):
         .select_from(Autoridad)
         .join(Distrito, Autoridad.distrito_id == Distrito.id)
         .join(Materia, Autoridad.materia_id == Materia.id)
-        .where(Autoridad.estatus == "A")
+        .where(*where_clauses)
         .order_by(Autoridad.clave)
         .offset(offset)
         .limit(limit)
