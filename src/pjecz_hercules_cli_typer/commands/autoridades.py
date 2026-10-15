@@ -43,7 +43,7 @@ def consultar(
     materia_clave = safe_clave(materia_clave)
     if materia_clave:
         where_clauses.append(Materia.clave == materia_clave)
-    descripcion_corta = safe_string(descripcion_corta)
+    descripcion_corta = safe_string(descripcion_corta, save_enie=True)
     if descripcion_corta is not None:
         where_clauses.append(Autoridad.descripcion_corta.like("%" + descripcion_corta + "%"))
 

@@ -35,7 +35,7 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [Modulo.estatus == "A"]
-    nombre = safe_string(nombre)
+    nombre = safe_string(nombre, save_enie=True)
     if nombre:
         where_clauses.append(Modulo.nombre.like("%" + nombre + "%"))
     if en_navegacion is not None:

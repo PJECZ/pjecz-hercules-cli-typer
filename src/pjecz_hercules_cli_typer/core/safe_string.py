@@ -6,6 +6,8 @@ import re
 
 from unidecode import unidecode
 
+EMAIL_REGEXP = r"^[\w.-]+@[\w.-]+\.\w+$"
+
 
 def safe_clave(input_str, max_len=16, only_digits=False, separator="-") -> str:
     """Safe clave"""
@@ -22,6 +24,22 @@ def safe_clave(input_str, max_len=16, only_digits=False, separator="-") -> str:
     final = without_spaces.upper()
     if len(final) > max_len:
         return final[:max_len]
+    return final
+
+
+def safe_email(input_str, search_fragment=False) -> str:
+    """Safe string"""
+    if not isinstance(input_str, str):
+        return ""
+    final = input_str.strip().lower()
+    if final == "":
+        return ""
+    if search_fragment:
+        if re.match(r"^[\w.-]*@*[\w.-]*\.*\w*$", final) is None:
+            return ""
+        return final
+    if re.match(EMAIL_REGEXP, final) is None:
+        return ""
     return final
 
 
