@@ -1,0 +1,3 @@
+"""
+Materias Tipos de Juicios
+"""

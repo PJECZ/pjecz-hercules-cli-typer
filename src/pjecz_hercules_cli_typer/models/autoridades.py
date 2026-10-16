@@ -51,9 +51,10 @@ class Autoridad(Base):
     con_copias_emails: Mapped[Optional[str]] = mapped_column(String(1024))
 
     # Hijos
-    #edictos: Mapped[list["Edicto"]] = relationship("Edicto", back_populates="autoridad")
-    #listas_de_acuerdos: Mapped[list["ListaDeAcuerdo"]] = relationship("ListaDeAcuerdo", back_populates="autoridad")
-    #sentencias: Mapped[list["Sentencia"]] = relationship("Sentencia", back_populates="autoridad")
+    edictos: Mapped[list["Edicto"]] = relationship("Edicto", back_populates="autoridad")
+    glosas: Mapped[list["Glosa"]] = relationship(back_populates="autoridad")
+    listas_de_acuerdos: Mapped[list["ListaDeAcuerdo"]] = relationship("ListaDeAcuerdo", back_populates="autoridad")
+    sentencias: Mapped[list["Sentencia"]] = relationship("Sentencia", back_populates="autoridad")
     usuarios: Mapped[list["Usuario"]] = relationship("Usuario", back_populates="autoridad")
 
     def __repr__(self):
