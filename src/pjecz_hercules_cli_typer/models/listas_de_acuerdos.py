@@ -24,7 +24,7 @@ class ListaDeAcuerdo(Base):
     autoridad: Mapped["Autoridad"] = relationship(back_populates="listas_de_acuerdos")
 
     # Columnas
-    fecha: Mapped[date] = mapped_column(index=True)
+    fecha: Mapped[date]
     descripcion: Mapped[str] = mapped_column(String(256))
     archivo: Mapped[str] = mapped_column(String(256))
     url: Mapped[str] = mapped_column(String(512))
