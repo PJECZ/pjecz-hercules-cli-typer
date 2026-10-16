@@ -80,11 +80,11 @@ Si hay alguna decisión dudosa (qué columnas mostrar, qué filtros incluir), pr
    - `select(...)` de columnas específicas (nunca la entidad completa), con `.label("<padre>_<columna>")` para las de tablas padre.
    - `tabla.add_row(...)` recibe sólo cadenas: convierte enteros con `str(...)`, fechas con `.strftime("%Y-%m-%d")`, booleanos como `"Sí"`/`"No"`, y `None` como `""`.
    - Líneas de máximo 128 caracteres.
-2. **Relaciones del modelo**: SQLAlchemy necesita que todas las clases mencionadas en `relationship(...)` del modelo y de sus padres estén importadas antes de configurar los mappers. Revisa que cada modelo referenciado (incluyendo los `# Hijos` del padre, p. ej. `Autoridad` → `Edicto`, `Glosa`, `ListaDeAcuerdo`, `Sentencia`, `Usuario`) se importe en algún módulo de comandos registrado en `main.py`. Si alguno falta, impórtalo en el nuevo comando o avisa al usuario.
+2. **Relaciones del modelo**: SQLAlchemy necesita que todas las clases mencionadas en `relationship(...)` estén importadas antes de configurar los mappers. Para eso `models/__init__.py` importa todos los modelos; verifica que el modelo de la tabla (y cualquier modelo que éste referencie) esté ahí, y si falta agrégalo en orden alfabético, tanto en los imports como en `__all__`.
 3. Registra el comando en `main.py`: agrega `from pjecz_hercules_cli_typer.commands.<tabla> import app as <tabla>_app` y `app.add_typer(<tabla>_app, name="<tabla-con-guiones>")`, ambos en orden alfabético con los existentes.
 
 ## Fase 5 — Verificar
 
 1. Ejecuta `uv run src/pjecz_hercules_cli_typer/main.py <tabla-con-guiones> consultar --help` y confirma que aparecen `--offset`, `--limit` y todos los filtros.
-2. Si hay conexión a la base de datos (`.env` presente), ejecuta `uv run src/pjecz_hercules_cli_typer/main.py <tabla-con-guiones> consultar --limit 5` y un ejemplo con al menos un filtro. Si falla por conexión, repórtalo tal cual; si falla por mappers (`InvalidRequestError ... failed to locate a name`), corrige los imports del paso 4.2.
+2. Si hay conexión a la base de datos (`.env` presente), ejecuta `uv run src/pjecz_hercules_cli_typer/main.py <tabla-con-guiones> consultar --limit 5` y un ejemplo con al menos un filtro. Si falla por conexión, repórtalo tal cual; si falla por mappers (`InvalidRequestError ... failed to locate a name`), corrige `models/__init__.py` según el paso 4.2.
 3. Resume al usuario: archivo creado, filtros con su función de saneamiento, y un ejemplo de uso. No hagas commit salvo que el usuario lo pida.
