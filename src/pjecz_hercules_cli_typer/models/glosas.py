@@ -47,4 +47,4 @@ class Glosa(Base):
 
     def __repr__(self):
         """Representación"""
-        return f"<Glosa {self.id}"
+        return f"<Glosa {self.id}>"
