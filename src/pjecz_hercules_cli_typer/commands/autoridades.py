@@ -44,7 +44,7 @@ def consultar(
     if materia_clave:
         where_clauses.append(Materia.clave == materia_clave)
     descripcion_corta = safe_string(descripcion_corta, save_enie=True)
-    if descripcion_corta is not None:
+    if descripcion_corta:
         where_clauses.append(Autoridad.descripcion_corta.like("%" + descripcion_corta + "%"))
 
     # Sentencia
