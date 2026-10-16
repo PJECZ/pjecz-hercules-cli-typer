@@ -10,7 +10,7 @@ from pjecz_hercules_cli_typer.commands.edictos import app as edictos_app
 from pjecz_hercules_cli_typer.commands.glosas import app as glosas_app
 from pjecz_hercules_cli_typer.commands.listas_de_acuerdos import app as listas_de_acuerdos_app
 from pjecz_hercules_cli_typer.commands.materias import app as materias_app
-from pjecz_hercules_cli_typer.commands.materias_tipos_de_juicios import app as materias_tipos_de_juicios_app
+from pjecz_hercules_cli_typer.commands.materias_tipos_juicios import app as materias_tipos_de_juicios_app
 from pjecz_hercules_cli_typer.commands.modulos import app as modulos_app
 from pjecz_hercules_cli_typer.commands.permisos import app as permisos_app
 from pjecz_hercules_cli_typer.commands.roles import app as roles_app

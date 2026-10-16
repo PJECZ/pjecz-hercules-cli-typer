@@ -25,7 +25,7 @@ class MateriaTipoJuicio(Base):
     descripcion: Mapped[str] = mapped_column(String(256))
 
     # Hijos
-    sentencias: Mapped[list["Sentencia"]] = relationship("Sentencia", back_populates="materia_tipo_juicio")
+    sentencias: Mapped[list["Sentencia"]] = relationship(back_populates="materia_tipo_juicio")
 
     def __repr__(self):
         """Representación"""
