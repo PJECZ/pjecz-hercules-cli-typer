@@ -2,33 +2,18 @@
 Glosas
 """
 
-from datetime import date
-
 from rich.console import Console
 from rich.table import Table
 from sqlalchemy import select
-from typer import Exit, Typer
+from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
+from pjecz_hercules_cli_typer.core.validations import validar_fecha, validar_tipo_juicio
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.glosas import Glosa
 
 app = Typer(help="Glosas")
-
-
-def _validar_fecha(fecha: str) -> date:
-    """Validar que la fecha tenga el formato AAAA-MM-DD"""
-    try:
-        return date.fromisoformat(fecha)
-    except ValueError:
-        raise Exit(1)
-
-
-def _validar_tipo_juicio(tipo_juicio: str) -> None:
-    """Validar que el tipo de juicio sea uno de los permitidos"""
-    if tipo_juicio not in Glosa.TIPOS_JUICIOS:
-        raise Exit(1)
 
 
 @app.command()
@@ -60,12 +45,12 @@ def consultar(
     if autoridad_clave:
         where_clauses.append(Autoridad.clave == autoridad_clave)
     if fecha_desde:
-        where_clauses.append(Glosa.fecha >= _validar_fecha(fecha_desde))
+        where_clauses.append(Glosa.fecha >= validar_fecha(fecha_desde))
     if fecha_hasta:
-        where_clauses.append(Glosa.fecha <= _validar_fecha(fecha_hasta))
+        where_clauses.append(Glosa.fecha <= validar_fecha(fecha_hasta))
     tipo_juicio = safe_string(tipo_juicio)
     if tipo_juicio:
-        _validar_tipo_juicio(tipo_juicio)
+        validar_tipo_juicio(tipo_juicio, Glosa.TIPOS_JUICIOS)
         where_clauses.append(Glosa.tipo_juicio == tipo_juicio)
     expediente = safe_string(expediente)
     if expediente:

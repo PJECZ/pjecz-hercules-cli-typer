@@ -5,21 +5,16 @@ Permisos
 from rich.console import Console
 from rich.table import Table
 from sqlalchemy import select
-from typer import Exit, Typer
+from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.core.safe_string import safe_string
+from pjecz_hercules_cli_typer.core.validations import validar_nivel
 from pjecz_hercules_cli_typer.models.modulos import Modulo
 from pjecz_hercules_cli_typer.models.permisos import Permiso
 from pjecz_hercules_cli_typer.models.roles import Rol
 
 app = Typer(help="Permisos")
-
-
-def _validar_nivel(nivel: int) -> None:
-    """Validar que el nivel sea un entero comprendido entre 1 y 4"""
-    if not isinstance(nivel, int) or isinstance(nivel, bool) or not (1 <= nivel <= 4):
-        raise Exit(1)
 
 
 @app.command()
@@ -36,7 +31,7 @@ def consultar(
 
     # Validar el filtro por nivel (valores permitidos: 1 a 4)
     if nivel is not None:
-        _validar_nivel(nivel)
+        validar_nivel(nivel)
 
     # Preparar tabla
     tabla = Table(title="Permisos")

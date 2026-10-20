@@ -2,27 +2,18 @@
 Listas de Acuerdos
 """
 
-from datetime import date
-
 from rich.console import Console
 from rich.table import Table
 from sqlalchemy import select
-from typer import Exit, Typer
+from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
+from pjecz_hercules_cli_typer.core.validations import validar_fecha
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.listas_de_acuerdos import ListaDeAcuerdo
 
 app = Typer(help="Listas de Acuerdos")
-
-
-def _validar_fecha(fecha: str) -> date:
-    """Validar que la fecha tenga el formato AAAA-MM-DD"""
-    try:
-        return date.fromisoformat(fecha)
-    except ValueError:
-        raise Exit(1)
 
 
 @app.command()
@@ -50,9 +41,9 @@ def consultar(
     if autoridad_clave:
         where_clauses.append(Autoridad.clave == autoridad_clave)
     if fecha_desde:
-        where_clauses.append(ListaDeAcuerdo.fecha >= _validar_fecha(fecha_desde))
+        where_clauses.append(ListaDeAcuerdo.fecha >= validar_fecha(fecha_desde))
     if fecha_hasta:
-        where_clauses.append(ListaDeAcuerdo.fecha <= _validar_fecha(fecha_hasta))
+        where_clauses.append(ListaDeAcuerdo.fecha <= validar_fecha(fecha_hasta))
     descripcion = safe_string(descripcion, save_enie=True)
     if descripcion:
         where_clauses.append(ListaDeAcuerdo.descripcion.like("%" + descripcion + "%"))

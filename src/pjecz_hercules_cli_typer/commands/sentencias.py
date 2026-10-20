@@ -2,28 +2,19 @@
 Sentencias
 """
 
-from datetime import date
-
 from rich.console import Console
 from rich.table import Table
 from sqlalchemy import select
-from typer import Exit, Typer
+from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
+from pjecz_hercules_cli_typer.core.validations import validar_fecha
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.materias_tipos_juicios import MateriaTipoJuicio
 from pjecz_hercules_cli_typer.models.sentencias import Sentencia
 
 app = Typer(help="Sentencias")
-
-
-def _validar_fecha(fecha: str) -> date:
-    """Validar que la fecha tenga el formato AAAA-MM-DD"""
-    try:
-        return date.fromisoformat(fecha)
-    except ValueError:
-        raise Exit(1)
 
 
 @app.command()
@@ -58,9 +49,9 @@ def consultar(
     if autoridad_clave:
         where_clauses.append(Autoridad.clave == autoridad_clave)
     if fecha_desde:
-        where_clauses.append(Sentencia.fecha >= _validar_fecha(fecha_desde))
+        where_clauses.append(Sentencia.fecha >= validar_fecha(fecha_desde))
     if fecha_hasta:
-        where_clauses.append(Sentencia.fecha <= _validar_fecha(fecha_hasta))
+        where_clauses.append(Sentencia.fecha <= validar_fecha(fecha_hasta))
     sentencia = safe_string(sentencia)
     if sentencia:
         where_clauses.append(Sentencia.sentencia.like("%" + sentencia + "%"))
