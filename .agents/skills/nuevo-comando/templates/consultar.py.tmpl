@@ -1,0 +1,64 @@
+"""
+<Nombre legible de la tabla>
+"""
+
+from rich.console import Console
+from rich.table import Table
+from sqlalchemy import select
+from typer import Typer
+
+from pjecz_hercules_cli_typer.core.database import session_scope
+from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
+from pjecz_hercules_cli_typer.models.<padres> import <Padre>
+from pjecz_hercules_cli_typer.models.<tabla> import <Modelo>
+
+app = Typer(help="<Nombre legible de la tabla>")
+
+
+@app.command()
+def consultar(
+    offset: int = 0,
+    limit: int = 25,
+    <padre>_clave: str | None = None,
+    <columna_texto>: str | None = None,
+):
+    """Consultar <nombre en minúsculas>"""
+    console = Console()
+    console.print("Consultando <nombre en minúsculas>...")
+
+    # Preparar tabla
+    tabla = Table(title="<Nombre legible de la tabla>")
+    tabla.add_column("<Padre>", header_style="green", no_wrap=True)
+    tabla.add_column("<Columna texto>", header_style="green")
+
+    # Cláusulas where
+    where_clauses = [<Modelo>.estatus == "A", <Padre>.estatus == "A"]
+    <padre>_clave = safe_clave(<padre>_clave)
+    if <padre>_clave:
+        where_clauses.append(<Padre>.clave == <padre>_clave)
+    <columna_texto> = safe_string(<columna_texto>, save_enie=True)
+    if <columna_texto>:
+        where_clauses.append(<Modelo>.<columna_texto>.like("%" + <columna_texto> + "%"))
+
+    # Sentencia
+    stmt = (
+        select(
+            <Padre>.clave.label("<padre>_clave"),
+            <Modelo>.<columna_texto>,
+        )
+        .select_from(<Modelo>)
+        .join(<Padre>, <Modelo>.<padre>_id == <Padre>.id)
+        .where(*where_clauses)
+        .order_by(<Modelo>.<columna_orden>)
+        .offset(offset)
+        .limit(limit)
+    )
+
+    # Consultar, agregar a la tabla y mostrar
+    with session_scope() as session:
+        for item in session.execute(stmt).all():
+            tabla.add_row(
+                item.<padre>_clave,
+                item.<columna_texto>,
+            )
+    console.print(tabla)
