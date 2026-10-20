@@ -12,6 +12,9 @@ from pjecz_hercules_cli_typer.models.listas_de_acuerdos import ListaDeAcuerdo
 from pjecz_hercules_cli_typer.models.materias import Materia
 from pjecz_hercules_cli_typer.models.materias_tipos_juicios import MateriaTipoJuicio
 from pjecz_hercules_cli_typer.models.modulos import Modulo
+from pjecz_hercules_cli_typer.models.ofi_documentos import OfiDocumento
+from pjecz_hercules_cli_typer.models.ofi_documentos_adjuntos import OfiDocumentoAdjunto
+from pjecz_hercules_cli_typer.models.ofi_documentos_destinatarios import OfiDocumentoDestinatario
 from pjecz_hercules_cli_typer.models.permisos import Permiso
 from pjecz_hercules_cli_typer.models.roles import Rol
 from pjecz_hercules_cli_typer.models.sentencias import Sentencia
@@ -27,6 +30,9 @@ __all__ = [
     "Materia",
     "MateriaTipoJuicio",
     "Modulo",
+    "OfiDocumento",
+    "OfiDocumentoAdjunto",
+    "OfiDocumentoDestinatario",
     "Permiso",
     "Rol",
     "Sentencia",
