@@ -9,7 +9,7 @@ from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
-from pjecz_hercules_cli_typer.core.validations import validar_fecha
+from pjecz_hercules_cli_typer.core.validations import safe_fecha
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.listas_de_acuerdos import ListaDeAcuerdo
 
@@ -41,9 +41,9 @@ def consultar(
     if autoridad_clave:
         where_clauses.append(Autoridad.clave == autoridad_clave)
     if fecha_desde:
-        where_clauses.append(ListaDeAcuerdo.fecha >= validar_fecha(fecha_desde))
+        where_clauses.append(ListaDeAcuerdo.fecha >= safe_fecha(fecha_desde))
     if fecha_hasta:
-        where_clauses.append(ListaDeAcuerdo.fecha <= validar_fecha(fecha_hasta))
+        where_clauses.append(ListaDeAcuerdo.fecha <= safe_fecha(fecha_hasta))
     descripcion = safe_string(descripcion, save_enie=True)
     if descripcion:
         where_clauses.append(ListaDeAcuerdo.descripcion.like("%" + descripcion + "%"))

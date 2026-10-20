@@ -59,7 +59,7 @@ Presenta al usuario, en una lista breve:
 | Email                                             | `safe_email(valor, search_fragment=True)`      | `.like("%" + valor + "%")`   |
 | Texto con nombres propios/descripciones (con ñ)   | `safe_string(valor, save_enie=True)`           | `.like("%" + valor + "%")`   |
 | Texto en mayúsculas sin ñ (CURP, RFC, expediente) | `safe_string(valor)`                           | `.like("%" + valor + "%")`   |
-| Entero con dominio acotado                        | función `_validar_<campo>` local (ver permisos) | `==`                         |
+| Entero con dominio acotado                        | función `safe_<campo>` local (ver permisos) | `==`                         |
 | Fecha (`date`)                                    | parámetros `<campo>_desde` / `<campo>_hasta` de tipo `str \| None`, convertidos con `date.fromisoformat` dentro de `try/except ValueError` que hace `raise Exit(1)` | `>=` / `<=` |
 
   Las columnas con `unique=True` (como `clave`) se filtran con `==`. Recuerda que `safe_string` convierte a mayúsculas por defecto; si la columna guarda minúsculas, pasa `to_uppercase=False`.

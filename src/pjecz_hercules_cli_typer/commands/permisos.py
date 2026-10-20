@@ -9,7 +9,7 @@ from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.core.safe_string import safe_string
-from pjecz_hercules_cli_typer.core.validations import validar_nivel
+from pjecz_hercules_cli_typer.core.validations import safe_nivel
 from pjecz_hercules_cli_typer.models.modulos import Modulo
 from pjecz_hercules_cli_typer.models.permisos import Permiso
 from pjecz_hercules_cli_typer.models.roles import Rol
@@ -31,7 +31,7 @@ def consultar(
 
     # Validar el filtro por nivel (valores permitidos: 1 a 4)
     if nivel is not None:
-        validar_nivel(nivel)
+        safe_nivel(nivel)
 
     # Preparar tabla
     tabla = Table(title="Permisos")

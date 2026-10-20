@@ -9,7 +9,7 @@ from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
-from pjecz_hercules_cli_typer.core.validations import validar_fecha, validar_tipo_juicio
+from pjecz_hercules_cli_typer.core.validations import safe_fecha, safe_tipo_juicio
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.glosas import Glosa
 
@@ -45,12 +45,12 @@ def consultar(
     if autoridad_clave:
         where_clauses.append(Autoridad.clave == autoridad_clave)
     if fecha_desde:
-        where_clauses.append(Glosa.fecha >= validar_fecha(fecha_desde))
+        where_clauses.append(Glosa.fecha >= safe_fecha(fecha_desde))
     if fecha_hasta:
-        where_clauses.append(Glosa.fecha <= validar_fecha(fecha_hasta))
+        where_clauses.append(Glosa.fecha <= safe_fecha(fecha_hasta))
     tipo_juicio = safe_string(tipo_juicio)
     if tipo_juicio:
-        validar_tipo_juicio(tipo_juicio, Glosa.TIPOS_JUICIOS)
+        safe_tipo_juicio(tipo_juicio, Glosa.TIPOS_JUICIOS)
         where_clauses.append(Glosa.tipo_juicio == tipo_juicio)
     expediente = safe_string(expediente)
     if expediente:
