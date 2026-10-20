@@ -6,8 +6,8 @@ import uuid
 
 from rich.console import Console
 from rich.table import Table
-from sqlalchemy import select
-from typer import Typer
+from sqlalchemy import func, select, update
+from typer import Typer, confirm
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
@@ -81,3 +81,31 @@ def consultar(
                 "Sí" if item.fue_leido else "No",
             )
     console.print(tabla)
+
+
+@app.command()
+def eliminar_todos(ofi_documento_id: uuid.UUID):
+    """Eliminar todos los destinatarios de un oficio documento (cambia su estatus a B)"""
+    console = Console()
+
+    # Cláusulas where
+    where_clauses = [
+        OfiDocumentoDestinatario.estatus == "A",
+        OfiDocumentoDestinatario.ofi_documento_id == ofi_documento_id,
+    ]
+
+    with session_scope() as session:
+        # Contar los destinatarios activos
+        stmt = select(func.count()).select_from(OfiDocumentoDestinatario).where(*where_clauses)
+        cantidad = session.execute(stmt).scalar_one()
+        if cantidad == 0:
+            console.print("No hay destinatarios activos para ese oficio documento.")
+            return
+
+        # Confirmar antes de eliminar
+        confirm(f"¿Eliminar {cantidad} destinatarios del oficio documento {ofi_documento_id}?", abort=True)
+
+        # Cambiar el estatus a B
+        session.execute(update(OfiDocumentoDestinatario).where(*where_clauses).values(estatus="B"))
+
+    console.print(f"Se eliminaron {cantidad} destinatarios.")
