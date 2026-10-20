@@ -6,11 +6,12 @@ import uuid
 
 from rich.console import Console
 from rich.table import Table
-from sqlalchemy import func, select, update
-from typer import Typer, confirm
+from sqlalchemy import func, insert, select, update
+from typer import Exit, Typer, confirm
 
 from pjecz_hercules_cli_typer.core.database import session_scope
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
+from pjecz_hercules_cli_typer.models.ofi_documentos import OfiDocumento
 from pjecz_hercules_cli_typer.models.ofi_documentos_destinatarios import OfiDocumentoDestinatario
 from pjecz_hercules_cli_typer.models.usuarios import Usuario
 
@@ -109,3 +110,79 @@ def eliminar_todos(ofi_documento_id: uuid.UUID):
         session.execute(update(OfiDocumentoDestinatario).where(*where_clauses).values(estatus="B"))
 
     console.print(f"Se eliminaron {cantidad} destinatarios.")
+
+
+@app.command()
+def agregar_todos(ofi_documento_id: uuid.UUID):
+    """Agregar como destinatarios a todos los usuarios activos con CURP"""
+    console = Console()
+
+    with session_scope() as session:
+        # Validar que exista el oficio documento
+        if session.get(OfiDocumento, ofi_documento_id) is None:
+            console.print(f"[red]No existe el oficio documento {ofi_documento_id}[/red]")
+            raise Exit(1)
+
+        # Consultar los usuarios activos con CURP
+        stmt = select(Usuario.id).where(Usuario.estatus == "A", Usuario.curp.is_not(None), func.trim(Usuario.curp) != "")
+        usuarios_ids = session.execute(stmt).scalars().all()
+
+        # Consultar los destinatarios que ya tiene el oficio documento, sin importar su estatus
+        stmt = select(
+            OfiDocumentoDestinatario.id,
+            OfiDocumentoDestinatario.usuario_id,
+            OfiDocumentoDestinatario.estatus,
+        ).where(OfiDocumentoDestinatario.ofi_documento_id == ofi_documento_id)
+        usuarios_activos = set()
+        destinatarios_eliminados = {}
+        for item in session.execute(stmt).all():
+            if item.estatus == "A":
+                usuarios_activos.add(item.usuario_id)
+            else:
+                destinatarios_eliminados[item.usuario_id] = item.id
+
+        # Separar los usuarios a insertar y los destinatarios a recuperar; se omiten los que ya están activos
+        insertar = []
+        recuperar = []
+        for usuario_id in usuarios_ids:
+            if usuario_id in usuarios_activos:
+                continue
+            if usuario_id in destinatarios_eliminados:
+                recuperar.append(destinatarios_eliminados[usuario_id])
+            else:
+                insertar.append(usuario_id)
+
+        # Confirmar antes de agregar
+        if insertar or recuperar:
+            confirm(
+                f"¿Insertar {len(insertar)} y recuperar {len(recuperar)} destinatarios "
+                f"del oficio documento {ofi_documento_id}?",
+                abort=True,
+            )
+
+        # Insertar los nuevos destinatarios
+        if insertar:
+            session.execute(
+                insert(OfiDocumentoDestinatario),
+                [{"ofi_documento_id": ofi_documento_id, "usuario_id": usuario_id} for usuario_id in insertar],
+            )
+
+        # Cambiar el estatus a A de los destinatarios eliminados
+        if recuperar:
+            session.execute(
+                update(OfiDocumentoDestinatario).where(OfiDocumentoDestinatario.id.in_(recuperar)).values(estatus="A")
+            )
+
+        # Contar los destinatarios activos
+        stmt = (
+            select(func.count())
+            .select_from(OfiDocumentoDestinatario)
+            .where(
+                OfiDocumentoDestinatario.estatus == "A",
+                OfiDocumentoDestinatario.ofi_documento_id == ofi_documento_id,
+            )
+        )
+        cantidad = session.execute(stmt).scalar_one()
+
+    console.print(f"Se insertaron {len(insertar)} y se recuperaron {len(recuperar)} destinatarios.")
+    console.print(f"El oficio documento tiene {cantidad} destinatarios activos.")
