@@ -32,6 +32,7 @@ def consultar(
 
     # Preparar tabla
     tabla = Table(title="Oficios Documentos")
+    tabla.add_column("ID", header_style="green", no_wrap=True)
     tabla.add_column("Autoridad", header_style="green", no_wrap=True)
     tabla.add_column("Usuario", header_style="green", no_wrap=True)
     tabla.add_column("Folio", header_style="green", no_wrap=True)
@@ -55,6 +56,7 @@ def consultar(
     # Sentencia
     stmt = (
         select(
+            OfiDocumento.id,
             Autoridad.clave.label("autoridad_clave"),
             Usuario.email.label("usuario_email"),
             OfiDocumento.folio,
@@ -79,6 +81,7 @@ def consultar(
             if len(descripcion_corta) > DESCRIPCION_MAX_LEN:
                 descripcion_corta = descripcion_corta[: DESCRIPCION_MAX_LEN - 3] + "..."
             tabla.add_row(
+                str(item.id),
                 item.autoridad_clave,
                 item.usuario_email,
                 item.folio or "",
