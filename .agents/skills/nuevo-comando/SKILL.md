@@ -27,7 +27,7 @@ El argumento recibido es: `$ARGUMENTS`
 ## Reglas obligatorias del subcomando `consultar`
 
 1. **Parámetros**: siempre `offset: int = 0` y `limit: int = 25` primero; después los filtros opcionales, todos con valor por defecto `None` (`str | None = None`, `int | None = None`, ...).
-2. **Validación**: todo filtro de texto proporcionado se sanea con una función de `core/safe_string.py` **antes** de usarse, y sólo se agrega a `where_clauses` si el resultado no es vacío (`if valor:`; nunca `if valor is not None:` porque las funciones devuelven `""`).
+2. **Validación**: todo filtro de texto proporcionado se sanea con una función de `core/validations.py` **antes** de usarse, y sólo se agrega a `where_clauses` si el resultado no es vacío (`if valor:`; nunca `if valor is not None:` porque las funciones devuelven `""`).
 3. **Salida**: siempre una `rich.table.Table` mostrada con `Console().print(tabla)`. Nunca `print()` ni `typer.echo()` para los resultados.
 4. **Sólo lectura**: el subcomando no modifica la base de datos.
 

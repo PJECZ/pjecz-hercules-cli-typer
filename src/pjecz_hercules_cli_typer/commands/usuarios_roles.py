@@ -8,7 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_email, safe_string
+from pjecz_hercules_cli_typer.core.validations import safe_email, safe_string
 from pjecz_hercules_cli_typer.models.roles import Rol
 from pjecz_hercules_cli_typer.models.usuarios import Usuario
 from pjecz_hercules_cli_typer.models.usuarios_roles import UsuarioRol

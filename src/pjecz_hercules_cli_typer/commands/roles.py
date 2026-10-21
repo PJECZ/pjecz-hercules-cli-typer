@@ -8,7 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_string
+from pjecz_hercules_cli_typer.core.validations import safe_string
 from pjecz_hercules_cli_typer.models.roles import Rol
 
 app = Typer(help="Roles")

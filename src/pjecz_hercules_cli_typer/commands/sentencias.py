@@ -8,8 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
-from pjecz_hercules_cli_typer.core.validations import safe_fecha
+from pjecz_hercules_cli_typer.core.validations import safe_clave, safe_fecha, safe_string
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.materias_tipos_juicios import MateriaTipoJuicio
 from pjecz_hercules_cli_typer.models.sentencias import Sentencia
