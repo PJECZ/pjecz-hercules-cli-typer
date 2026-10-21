@@ -98,7 +98,7 @@ def consultar(
         .join(ArcJuzgadoExtinto, ArcDocumento.arc_juzgado_origen_id == ArcJuzgadoExtinto.id)
         .join(ArcDocumentoTipo, ArcDocumento.arc_documento_tipo_id == ArcDocumentoTipo.id)
         .where(*where_clauses)
-        .order_by(ArcDocumento.expediente)
+        .order_by(ArcDocumento.id)
         .offset(offset)
         .limit(limit)
     )

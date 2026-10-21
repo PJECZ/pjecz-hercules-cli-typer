@@ -63,7 +63,7 @@ def consultar(
         .join(Usuario, OfiDocumentoDestinatario.usuario_id == Usuario.id)
         .join(Autoridad, Usuario.autoridad_id == Autoridad.id)
         .where(*where_clauses)
-        .order_by(OfiDocumentoDestinatario.con_copia, Usuario.email)
+        .order_by(Usuario.email)
         .offset(offset)
         .limit(limit)
     )
