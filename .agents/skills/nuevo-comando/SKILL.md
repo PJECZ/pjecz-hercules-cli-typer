@@ -27,7 +27,19 @@ El argumento recibido es: `$ARGUMENTS`
 ## Reglas obligatorias del subcomando `consultar`
 
 1. **Parámetros**: siempre `offset: int = 0` y `limit: int = 25` primero; después los filtros opcionales, todos con valor por defecto `None` (`str | None = None`, `int | None = None`, ...).
-2. **Validación**: todo filtro de texto proporcionado se sanea con una función de `core/validations.py` **antes** de usarse, y sólo se agrega a `where_clauses` si el resultado no es vacío (`if valor:`; nunca `if valor is not None:` porque las funciones devuelven `""`).
+2. **Validación**: todo filtro proporcionado se valida con una función de `core/validations.py` **antes** de usarse, en una sola condición con el operador `:=`:
+
+   ```python
+   if valor and (valor := safe_*(valor)):
+       where_clauses.append(...)
+   ```
+
+   - El primer `valor` descarta el `None` (y la cadena vacía) sin llamar a `safe_*`, que espera un `str` y fallaría con `None`.
+   - `valor := safe_*(valor)` guarda el resultado saneado en la misma variable y la condición sólo se cumple si no quedó vacío (las funciones devuelven `""` cuando el texto queda vacío al normalizar).
+   - Los paréntesis alrededor de `:=` son obligatorios; `if valor and valor := safe_*(valor):` es un `SyntaxError`.
+   - Nunca escribas `valor = safe_*(valor)` en una línea y `if valor:` en otra, ni uses `if valor is not None:` para filtros de texto.
+   - Las funciones de `core/validations.py` sólo aceptan los argumentos de su firma (`safe_string(texto, max_len=256)`, `safe_clave(clave, max_len=16)`, `safe_curp(texto)`, `safe_email(texto)`, `safe_expediente(expediente)`, `safe_fecha(fecha)`, `safe_nivel(nivel)`, `safe_tipo_juicio(tipo_juicio, tipos_juicios)`). No existen `save_enie`, `search_fragment`, `to_uppercase` ni `do_unidecode`: son de `core/safe_string.py`, que ya no se usa.
+   - Si el valor no es válido, la función lanza `MyNotValidParamError`; no lo atrapes en el comando.
 3. **Salida**: siempre una `rich.table.Table` mostrada con `Console().print(tabla)`. Nunca `print()` ni `typer.echo()` para los resultados.
 4. **Sólo lectura**: el subcomando no modifica la base de datos.
 
@@ -45,6 +57,7 @@ El argumento recibido es: `$ARGUMENTS`
    - `commands/usuarios.py` y `commands/autoridades.py` — joins con condición explícita y filtros por clave de la tabla padre.
    - `commands/usuarios_roles.py` y `commands/permisos.py` — tablas de unión; `permisos.py` también muestra un filtro entero validado.
 3. Lee `templates/consultar.py.tmpl` (en el directorio de este skill): es el esqueleto a completar.
+4. Lee `core/validations.py` para confirmar las funciones disponibles y sus firmas. Algunos comandos de referencia todavía sanean con el patrón anterior (`valor = safe_*(valor, save_enie=True)` seguido de `if valor:`); de ellos copia el estilo de la tabla, los joins y la sentencia, pero **no** la validación: ésta sigue siempre la regla 2 y la plantilla.
 
 ## Fase 3 — Proponer el diseño (y esperar confirmación)
 
@@ -53,16 +66,33 @@ Presenta al usuario, en una lista breve:
 - **Columnas de la tabla de salida**: las columnas útiles del modelo (omite `id`, las columnas de auditoría `creado`/`modificado`/`estatus`, y columnas largas como `url`, `archivo` o directorios salvo que tengan sentido), más la clave o nombre de cada padre (p. ej. `Autoridad.clave` como "Autoridad").
 - **Filtros opcionales** y la función de saneamiento de cada uno, según esta tabla:
 
-| Tipo de columna                                   | Función                                        | Comparación                  |
-| ------------------------------------------------- | ---------------------------------------------- | ---------------------------- |
-| Clave (`clave`, `<padre>_clave`)                  | `safe_clave(valor)`                            | `==`                         |
-| Email                                             | `safe_email(valor, search_fragment=True)`      | `.like("%" + valor + "%")`   |
-| Texto con nombres propios/descripciones (con ñ)   | `safe_string(valor, save_enie=True)`           | `.like("%" + valor + "%")`   |
-| Texto en mayúsculas sin ñ (CURP, RFC, expediente) | `safe_string(valor)`                           | `.like("%" + valor + "%")`   |
-| Entero con dominio acotado                        | función `safe_<campo>` local (ver permisos) | `==`                         |
-| Fecha (`date`)                                    | parámetros `<campo>_desde` / `<campo>_hasta` de tipo `str \| None`, convertidos con `date.fromisoformat` dentro de `try/except ValueError` que hace `raise Exit(1)` | `>=` / `<=` |
+| Tipo de columna                                 | Condición                                                                       | Comparación                |
+| ----------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------- |
+| Clave (`clave`, `<padre>_clave`)                | `if valor and (valor := safe_clave(valor)):`                                    | `==`                       |
+| Email (completo)                                | `if valor and (valor := safe_email(valor)):`                                    | `==`                       |
+| CURP (completo)                                 | `if valor and (valor := safe_curp(valor)):`                                     | `==`                       |
+| Expediente (completo, `123/2024`)               | `if valor and (valor := safe_expediente(valor)):`                               | `==`                       |
+| Texto (nombres, descripciones, RFC, etc.)       | `if valor and (valor := safe_string(valor)):`                                   | `.like("%" + valor + "%")` |
+| Tipo de juicio (catálogo `TIPOS_JUICIOS`)       | `if valor and (valor := safe_string(valor)):` y dentro `safe_tipo_juicio(valor, Modelo.TIPOS_JUICIOS)` | `==` |
+| Nivel (entero de 1 a 4)                         | `if nivel is not None:` y dentro `safe_nivel(nivel)` (ver abajo)                | `==`                       |
+| Fecha (`date`)                                  | parámetros `<campo>_desde` / `<campo>_hasta` de tipo `str \| None`: `if <campo>_desde and (desde := safe_fecha(<campo>_desde)):` | `>=` / `<=` |
 
-  Las columnas con `unique=True` (como `clave`) se filtran con `==`. Recuerda que `safe_string` convierte a mayúsculas por defecto; si la columna guarda minúsculas, pasa `to_uppercase=False`.
+  Notas:
+
+  - Las columnas con `unique=True` (como `clave`) se filtran con `==`.
+  - `safe_string` siempre convierte a mayúsculas, quita acentos y conserva Ñ y Ü; no recibe opciones para cambiar eso.
+  - `safe_email`, `safe_curp` y `safe_expediente` validan el valor **completo** con una expresión regular, así que no sirven para buscar fragmentos; por eso se comparan con `==`.
+  - `safe_fecha` devuelve un `date`: guárdalo en una variable nueva (`desde`, `hasta`) en lugar de reasignar el parámetro `str | None`, para no romper el tipo declarado.
+  - `safe_nivel` y `safe_tipo_juicio` no devuelven el valor (sólo lanzan `MyNotValidParamError` si es inválido), así que no se usan con `:=`. Para el nivel usa `is not None` porque `0` es falsy y debe rechazarse, no ignorarse:
+
+    ```python
+    if nivel is not None:
+        safe_nivel(nivel)
+        where_clauses.append(<Modelo>.nivel == nivel)
+    if tipo_juicio and (tipo_juicio := safe_string(tipo_juicio)):
+        safe_tipo_juicio(tipo_juicio, <Modelo>.TIPOS_JUICIOS)
+        where_clauses.append(<Modelo>.tipo_juicio == tipo_juicio)
+    ```
 
 - **Joins** necesarios para los filtros/columnas de tablas padre, con condición explícita (`.join(Padre, Modelo.padre_id == Padre.id)`), y su cláusula `Padre.estatus == "A"`.
 - **Orden** (`order_by`): la columna natural de búsqueda (clave, nombre, email; en tablas con fecha, `Modelo.fecha.desc()`).
@@ -74,7 +104,8 @@ Si hay alguna decisión dudosa (qué columnas mostrar, qué filtros incluir), pr
 
 1. Escribe `commands/<tabla>.py` a partir de `templates/consultar.py.tmpl`, respetando:
    - Docstring del módulo con el nombre legible de la tabla; `app = Typer(help="<Nombre>")`.
-   - Imports ordenados al estilo isort (perfil black): stdlib, terceros (`rich`, `sqlalchemy`, `typer`), luego `pjecz_hercules_cli_typer.*` en orden alfabético; importa sólo las funciones de `safe_string` que uses.
+   - Imports ordenados al estilo isort (perfil black): stdlib, terceros (`rich`, `sqlalchemy`, `typer`), luego `pjecz_hercules_cli_typer.*` en orden alfabético; importa de `pjecz_hercules_cli_typer.core.validations` sólo las funciones que uses.
+   - Cada filtro se valida en una sola condición con `:=` (regla 2), dentro de `# Cláusulas where`.
    - Comentarios de sección exactos: `# Preparar tabla`, `# Cláusulas where`, `# Sentencia`, `# Consultar, agregar a la tabla y mostrar`.
    - Columnas con `header_style="green"`; `no_wrap=True` en claves y emails.
    - `select(...)` de columnas específicas (nunca la entidad completa), con `.label("<padre>_<columna>")` para las de tablas padre.

@@ -30,8 +30,7 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [Rol.estatus == "A"]
-    nombre = safe_string(nombre, save_enie=True)
-    if nombre:
+    if nombre and (nombre := safe_string(nombre)):
         where_clauses.append(Rol.nombre.like("%" + nombre + "%"))
 
     # Sentencia

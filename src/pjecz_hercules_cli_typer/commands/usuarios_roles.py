@@ -34,11 +34,9 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [UsuarioRol.estatus == "A", Usuario.estatus == "A", Rol.estatus == "A"]
-    email = safe_email(email, search_fragment=True)
-    if email:
-        where_clauses.append(Usuario.email.like("%" + email + "%"))
-    rol_nombre = safe_string(rol_nombre)
-    if rol_nombre:
+    if email and (email := safe_email(email)):
+        where_clauses.append(Usuario.email == email)
+    if rol_nombre and (rol_nombre := safe_string(rol_nombre)):
         where_clauses.append(Rol.nombre.like("%" + rol_nombre + "%"))
 
     # Sentencia

@@ -2,6 +2,9 @@
 Main
 """
 
+import sys
+
+from rich.console import Console
 from typer import Typer
 
 from pjecz_hercules_cli_typer.commands.autoridades import app as autoridades_app
@@ -19,6 +22,7 @@ from pjecz_hercules_cli_typer.commands.roles import app as roles_app
 from pjecz_hercules_cli_typer.commands.sentencias import app as sentencias_app
 from pjecz_hercules_cli_typer.commands.usuarios import app as usuarios_app
 from pjecz_hercules_cli_typer.commands.usuarios_roles import app as usuarios_roles_app
+from pjecz_hercules_cli_typer.core.exceptions import MyNotValidParamError
 
 app = Typer()
 app.add_typer(autoridades_app, name="autoridades")
@@ -37,5 +41,15 @@ app.add_typer(sentencias_app, name="sentencias")
 app.add_typer(usuarios_app, name="usuarios")
 app.add_typer(usuarios_roles_app, name="usuarios-roles")
 
+
+def main():
+    """Ejecutar la aplicación y mostrar los parámetros inválidos sin traceback"""
+    try:
+        app()
+    except MyNotValidParamError as error:
+        Console(stderr=True).print(f"[red]{error}[/red]")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
-    app()
+    main()

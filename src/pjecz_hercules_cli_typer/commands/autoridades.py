@@ -37,14 +37,11 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [Autoridad.estatus == "A"]
-    distrito_clave = safe_clave(distrito_clave)
-    if distrito_clave:
+    if distrito_clave and (distrito_clave := safe_clave(distrito_clave)):
         where_clauses.append(Distrito.clave == distrito_clave)
-    materia_clave = safe_clave(materia_clave)
-    if materia_clave:
+    if materia_clave and (materia_clave := safe_clave(materia_clave)):
         where_clauses.append(Materia.clave == materia_clave)
-    descripcion_corta = safe_string(descripcion_corta, save_enie=True)
-    if descripcion_corta:
+    if descripcion_corta and (descripcion_corta := safe_string(descripcion_corta)):
         where_clauses.append(Autoridad.descripcion_corta.like("%" + descripcion_corta + "%"))
 
     # Sentencia

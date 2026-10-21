@@ -9,7 +9,6 @@ import re
 from collections.abc import Container
 from datetime import date
 
-from typer import Exit
 from unidecode import unidecode
 
 from pjecz_hercules_cli_typer.core.exceptions import MyNotValidParamError
@@ -35,7 +34,7 @@ def safe_clave(clave: str, max_len: int = 16) -> str:
     if clave == "":
         return ""
     if re.match(CLAVE_REGEXP, clave) is None:
-        MyNotValidParamError("La clave no es válida")
+        raise MyNotValidParamError("La clave no es válida")
     return clave
 
 
@@ -45,7 +44,7 @@ def safe_curp(texto: str) -> str:
     if texto == "":
         return ""
     if re.match(CURP_REGEXP, texto) is None:
-        MyNotValidParamError("El CURP no es válido")
+        raise MyNotValidParamError("El CURP no es válido")
     return texto
 
 
@@ -55,7 +54,7 @@ def safe_email(texto: str) -> str:
     if texto == "":
         return ""
     if re.match(EMAIL_REGEXP, texto) is None:
-        MyNotValidParamError("El correo electrónico no es válido")
+        raise MyNotValidParamError("El correo electrónico no es válido")
     return texto
 
 
@@ -65,7 +64,7 @@ def safe_expediente(expediente: str) -> str:
     if expediente == "":
         return ""
     if re.match(EXPEDIENTE_REGEXP, expediente) is None:
-        MyNotValidParamError("El expediente no es válido")
+        raise MyNotValidParamError("El expediente no es válido")
     numero, resto = expediente.split("/", 1)
     return f"{int(numero)}/{resto}"
 
@@ -75,17 +74,17 @@ def safe_fecha(fecha: str) -> date:
     try:
         fecha_date = date.fromisoformat(fecha)
     except ValueError:
-        MyNotValidParamError("La fecha no es válida")
+        raise MyNotValidParamError("La fecha no es válida")
     return fecha_date
 
 
 def safe_nivel(nivel: int) -> None:
     """Validar que el nivel sea un entero comprendido entre 1 y 4"""
     if not isinstance(nivel, int) or isinstance(nivel, bool) or not (1 <= nivel <= 4):
-        MyNotValidParamError("El nivel no es válido")
+        raise MyNotValidParamError("El nivel no es válido")
 
 
 def safe_tipo_juicio(tipo_juicio: str, tipos_juicios: Container[str]) -> None:
     """Validar que el tipo de juicio sea uno de los permitidos"""
     if tipo_juicio not in tipos_juicios:
-        MyNotValidParamError("El tipo de juicio no es válido")
+        raise MyNotValidParamError("El tipo de juicio no es válido")
