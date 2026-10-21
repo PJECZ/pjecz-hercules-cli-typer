@@ -23,12 +23,13 @@ Este spec fija de antemano los parámetros de cada comando para revisarlos, quit
 - Archivos nuevos `commands/<modelo>.py`, cada uno con el subcomando `consultar`.
 - Registro de los 29 comandos en `main.py`, en orden alfabético.
 - Mostrar la columna "ID" en las tablas padre que no tienen columna única (`arc-documentos`, `arc-remesas`, `exh-exhortos`), para poder filtrar a sus hijos.
+- Agregar al comando existente `autoridades consultar` los filtros booleanos `--es-*`.
 
 **Fuera de alcance (para specs futuros):**
 
 - Subcomando `exportar` (SPEC 02). Ya decidido: CSV con el módulo `csv` de la biblioteca estándar, archivo en `exports/`, mismos filtros que `consultar` y sin `offset`/`limit`.
 - Subcomandos de detalle, alta, edición o borrado.
-- Cambios a los comandos existentes (salvo `main.py`).
+- Cambios a los comandos existentes (salvo `main.py` y los filtros `--es-*` de `autoridades`).
 - Cambios a los modelos o al esquema de la base de datos.
 - Los stubs vacíos ya registrados.
 
@@ -360,6 +361,21 @@ Tacha o agrega filas para ajustar los filtros antes de aprobar el spec.
 | `--tipo-sentencia` | `RepsvmAgresor.tipo_sentencia` | `safe_opcion(TIPOS_SENTENCIAS)` | `==` |
 | `--es-publico / --no-es-publico` | `RepsvmAgresor.es_publico` | `is not None` | `==` |
 
+#### Comandos existentes
+
+**`autoridades`** — se conservan sus filtros, columnas de salida, joins y orden actuales. Se agregan los filtros:
+
+| Opción CLI | Columna | Validación | Comparación |
+| ---------- | ------- | ---------- | ----------- |
+| `--es-archivo-solicitante / --no-es-archivo-solicitante` | `Autoridad.es_archivo_solicitante` | `is not None` | `==` |
+| `--es-cemasc / --no-es-cemasc` | `Autoridad.es_cemasc` | `is not None` | `==` |
+| `--es-defensoria / --no-es-defensoria` | `Autoridad.es_defensoria` | `is not None` | `==` |
+| `--es-extinto / --no-es-extinto` | `Autoridad.es_extinto` | `is not None` | `==` |
+| `--es-jurisdiccional / --no-es-jurisdiccional` | `Autoridad.es_jurisdiccional` | `is not None` | `==` |
+| `--es-notaria / --no-es-notaria` | `Autoridad.es_notaria` | `is not None` | `==` |
+| `--es-organo-especializado / --no-es-organo-especializado` | `Autoridad.es_organo_especializado` | `is not None` | `==` |
+| `--es-revisor-escrituras / --no-es-revisor-escrituras` | `Autoridad.es_revisor_escrituras` | `is not None` | `==` |
+
 ---
 
 ## Plan de implementación
@@ -376,6 +392,7 @@ Cada paso termina registrando sus comandos en `main.py` y ejecutando `--help` de
 7. Módulo Exhortos: `exh-areas`, `exh-tipos-diligencias`, `exh-exhortos`, `exh-exhortos-archivos`, `exh-exhortos-partes`.
 8. Módulo Oficios: `ofi-documentos-adjuntos`.
 9. Otros: `redams`, `repsvm-agresores`.
+10. Comando existente `autoridades`: agregar los 8 filtros `--es-*`.
 
 ---
 
@@ -391,6 +408,7 @@ Cada paso termina registrando sus comandos en `main.py` y ejecutando `--help` de
 - [ ] `ofi-documentos-adjuntos consultar --ofi-documento-id abc` termina con código 1 y un mensaje en rojo, sin traceback.
 - [ ] `exh-exhortos consultar --estado INEXISTENTE` termina con código 1 y un mensaje en rojo, sin traceback.
 - [ ] `soportes-tickets consultar --creado-hasta <hoy>` incluye los tickets creados hoy.
+- [ ] `autoridades consultar --help` muestra los 8 pares `--es-*` / `--no-es-*`, y `--es-jurisdiccional` devuelve sólo autoridades jurisdiccionales.
 - [ ] Ningún subcomando nuevo modifica la base de datos (sólo usa `select`).
 - [ ] `ruff check` y `black --check` pasan sin errores en los archivos nuevos.
 
@@ -414,6 +432,8 @@ Cada paso termina registrando sus comandos en `main.py` y ejecutando `--help` de
 - **Sí:** en columnas `datetime`, `*_hasta` incluye el día completo (`< hasta + 1 día`).
 - **No:** comparar `datetime <= date`. Excluiría los registros del mismo día después de las 00:00.
 - **Sí:** `--exhorto-origen-id` compara contra `func.upper(...)`. Lo envía otro Poder Judicial y puede traer minúsculas; `safe_string` siempre convierte a mayúsculas.
+- **Sí:** agregar a `autoridades` los filtros booleanos `--es-*` en este spec. Es un cambio pequeño al comando existente y no cambia su salida.
+- **No:** filtro `--es-vsp-digitalizaciones`. La columna `es_vsp_digitalizaciones` ya no se usa.
 - **Sí:** el nombre del archivo del comando es el del modelo (`redams.py`, aunque la tabla se llama `redam`).
 
 ---
@@ -433,7 +453,7 @@ Cada paso termina registrando sus comandos en `main.py` y ejecutando `--help` de
 
 - Subcomando `exportar` (SPEC 02).
 - Subcomandos de detalle, alta, edición o borrado.
-- Cambios a modelos, esquema o comandos existentes.
+- Cambios a modelos, esquema o comandos existentes (salvo los filtros `--es-*` de `autoridades`).
 - Pruebas automatizadas.
 
 Cada uno, si llega, va en su propio spec.

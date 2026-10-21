@@ -23,6 +23,14 @@ def consultar(
     distrito_clave: str | None = None,
     materia_clave: str | None = None,
     descripcion_corta: str | None = None,
+    es_archivo_solicitante: bool | None = None,
+    es_cemasc: bool | None = None,
+    es_defensoria: bool | None = None,
+    es_extinto: bool | None = None,
+    es_jurisdiccional: bool | None = None,
+    es_notaria: bool | None = None,
+    es_organo_especializado: bool | None = None,
+    es_revisor_escrituras: bool | None = None,
 ):
     """Consultar autoridades"""
     console = Console()
@@ -43,6 +51,22 @@ def consultar(
         where_clauses.append(Materia.clave == materia_clave)
     if descripcion_corta and (descripcion_corta := safe_string(descripcion_corta)):
         where_clauses.append(Autoridad.descripcion_corta.like("%" + descripcion_corta + "%"))
+    if es_archivo_solicitante is not None:
+        where_clauses.append(Autoridad.es_archivo_solicitante == es_archivo_solicitante)
+    if es_cemasc is not None:
+        where_clauses.append(Autoridad.es_cemasc == es_cemasc)
+    if es_defensoria is not None:
+        where_clauses.append(Autoridad.es_defensoria == es_defensoria)
+    if es_extinto is not None:
+        where_clauses.append(Autoridad.es_extinto == es_extinto)
+    if es_jurisdiccional is not None:
+        where_clauses.append(Autoridad.es_jurisdiccional == es_jurisdiccional)
+    if es_notaria is not None:
+        where_clauses.append(Autoridad.es_notaria == es_notaria)
+    if es_organo_especializado is not None:
+        where_clauses.append(Autoridad.es_organo_especializado == es_organo_especializado)
+    if es_revisor_escrituras is not None:
+        where_clauses.append(Autoridad.es_revisor_escrituras == es_revisor_escrituras)
 
     # Sentencia
     stmt = (
