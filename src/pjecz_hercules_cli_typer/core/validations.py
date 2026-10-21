@@ -6,6 +6,7 @@ Si un texto queda vacío después de normalizar, entregan una cadena vacía para
 """
 
 import re
+import uuid
 from collections.abc import Container
 from datetime import date
 
@@ -88,3 +89,32 @@ def safe_tipo_juicio(tipo_juicio: str, tipos_juicios: Container[str]) -> None:
     """Validar que el tipo de juicio sea uno de los permitidos"""
     if tipo_juicio not in tipos_juicios:
         raise MyNotValidParamError("El tipo de juicio no es válido")
+
+
+def safe_opcion(valor: str | int, opciones: Container) -> str | int:
+    """Validar que el valor sea una de las opciones del catálogo del modelo (ESTADOS, UBICACIONES, ...)
+
+    Los textos se normalizan con safe_string, que quita los acentos, por lo que no coinciden con opciones acentuadas.
+    """
+    if isinstance(valor, str):
+        valor = safe_string(valor)
+        if valor == "":
+            return ""
+    if valor not in opciones:
+        raise MyNotValidParamError("La opción no es válida")
+    return valor
+
+
+def safe_id(id_: int) -> int:
+    """Validar que el id sea un entero positivo"""
+    if not isinstance(id_, int) or isinstance(id_, bool) or id_ <= 0:
+        raise MyNotValidParamError("El ID no es válido")
+    return id_
+
+
+def safe_uuid(texto: str) -> uuid.UUID:
+    """Validar y convertir un UUID"""
+    try:
+        return uuid.UUID(texto.strip())
+    except ValueError:
+        raise MyNotValidParamError("El UUID no es válido")
