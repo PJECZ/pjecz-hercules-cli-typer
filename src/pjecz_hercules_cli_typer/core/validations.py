@@ -91,15 +91,17 @@ def safe_tipo_juicio(tipo_juicio: str, tipos_juicios: Container[str]) -> None:
         raise MyNotValidParamError("El tipo de juicio no es válido")
 
 
-def safe_opcion(valor: str | int, opciones: Container) -> str | int:
-    """Validar que el valor sea una de las opciones del catálogo del modelo (ESTADOS, UBICACIONES, ...)
+def safe_opcion(valor: str, opciones: Container) -> str:
+    """Validar que el valor sea una de las opciones del catálogo del modelo"""
+    if valor == "":
+        return ""
+    if valor not in opciones:
+        raise MyNotValidParamError("La opción no es válida")
+    return valor
 
-    Los textos se normalizan con safe_string, que quita los acentos, por lo que no coinciden con opciones acentuadas.
-    """
-    if isinstance(valor, str):
-        valor = safe_string(valor)
-        if valor == "":
-            return ""
+
+def safe_opcion_int(valor: int, opciones: Container) -> int:
+    """Validar que el valor sea una de las opciones del catálogo del modelo"""
     if valor not in opciones:
         raise MyNotValidParamError("La opción no es válida")
     return valor

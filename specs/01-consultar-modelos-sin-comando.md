@@ -19,7 +19,7 @@ Este spec fija de antemano los parámetros de cada comando para revisarlos, quit
 
 **Dentro:**
 
-- Tres funciones nuevas en `core/validations.py`: `safe_opcion`, `safe_id` y `safe_uuid`.
+- Cuatro funciones nuevas en `core/validations.py`: `safe_opcion`, `safe_opcion_int`, `safe_id` y `safe_uuid`.
 - Archivos nuevos `commands/<modelo>.py`, cada uno con el subcomando `consultar`.
 - Registro de los 29 comandos en `main.py`, en orden alfabético.
 - Mostrar la columna "ID" en las tablas padre que no tienen columna única (`arc-documentos`, `arc-remesas`, `exh-exhortos`), para poder filtrar a sus hijos.
@@ -37,12 +37,16 @@ Este spec fija de antemano los parámetros de cada comando para revisarlos, quit
 ## Modelo de datos
 
 Este spec no introduce estructuras de datos nuevas; lee las tablas existentes.
-Agrega tres validaciones a `core/validations.py`:
+Agrega cuatro validaciones a `core/validations.py`:
 
 ```python
-def safe_opcion(valor: str | int, opciones: Container) -> str | int:
-    """Validar que el valor sea una de las opciones del catálogo del modelo (ESTADOS, UBICACIONES, ...)"""
-    # Si es str aplica safe_string antes de comparar; si no está en opciones lanza MyNotValidParamError
+def safe_opcion(valor: str, opciones: Container) -> str:
+    """Validar que el valor sea una de las opciones del catálogo del modelo"""
+    # Si no está en opciones lanza MyNotValidParamError
+
+def safe_opcion_int(valor: int, opciones: Container) -> int:
+    """Validar que el valor sea una de las opciones del catálogo del modelo"""
+    # Para catálogos con claves enteras (TIPOS_DOCUMENTOS, TIPOS_PARTES); si no está en opciones lanza MyNotValidParamError
 
 def safe_id(id_: int) -> int:
     """Validar que el id sea un entero positivo"""
@@ -60,7 +64,7 @@ def safe_uuid(texto: str) -> uuid.UUID:
 - Excepciones al patrón `:=`: los filtros enteros (`anio`, `*_id`, catálogos con claves enteras) usan `if valor is not None:` porque `0` debe rechazarse, no ignorarse.
 - Filtro por padre: por su columna única (`clave`, `nombre`, `email`, `edificio`) con `==`.
 - Si el padre no tiene columna única, se filtra por su id con `safe_id` (entero) o `safe_uuid` (UUID).
-- Columnas de catálogo (`Enum`): `safe_opcion(valor, Modelo.CATALOGO)` y `==`.
+- Columnas de catálogo (`Enum`): `safe_opcion(valor, Modelo.CATALOGO)` y `==`; si las claves del catálogo son enteras, `safe_opcion_int`.
 - Fechas (`date`): `<campo>_desde` / `<campo>_hasta` con `safe_fecha`, comparación `>=` / `<=`.
 - Fechas y horas (`datetime`): `<campo>_desde` con `>=`; `<campo>_hasta` con `< hasta + timedelta(days=1)` para incluir el día completo.
 - Salida: `date` como `%Y-%m-%d`, `datetime` como `%Y-%m-%d %H:%M`, booleanos como `"Sí"`/`"No"`, `None` como `""`.
@@ -311,7 +315,7 @@ Tacha o agrega filas para ajustar los filtros antes de aprobar el spec.
 | ---------- | ------- | ---------- | ----------- |
 | `--exh-exhorto-id` | `ExhExhortoArchivo.exh_exhorto_id` | `safe_id` | `==` |
 | `--nombre-archivo` | `ExhExhortoArchivo.nombre_archivo` | `safe_string` | `like` |
-| `--tipo-documento` | `ExhExhortoArchivo.tipo_documento` | `safe_opcion(TIPOS_DOCUMENTOS)` (entero) | `==` |
+| `--tipo-documento` | `ExhExhortoArchivo.tipo_documento` | `safe_opcion_int(TIPOS_DOCUMENTOS)` | `==` |
 | `--estado` | `ExhExhortoArchivo.estado` | `safe_opcion(ESTADOS)` | `==` |
 
 **`exh-exhortos-partes`** — join `ExhExhorto`; orden `ExhExhortoParte.exh_exhorto_id`, `nombre`. Salida: Exhorto ID, Nombre, Apellido paterno, Apellido materno, Género, Persona moral, Tipo parte.
@@ -322,7 +326,7 @@ Tacha o agrega filas para ajustar los filtros antes de aprobar el spec.
 | `--nombre` | `ExhExhortoParte.nombre` | `safe_string` | `like` |
 | `--apellido-paterno` | `ExhExhortoParte.apellido_paterno` | `safe_string` | `like` |
 | `--apellido-materno` | `ExhExhortoParte.apellido_materno` | `safe_string` | `like` |
-| `--tipo-parte` | `ExhExhortoParte.tipo_parte` | `safe_opcion(TIPOS_PARTES)` (entero) | `==` |
+| `--tipo-parte` | `ExhExhortoParte.tipo_parte` | `safe_opcion_int(TIPOS_PARTES)` | `==` |
 
 #### Módulo Oficios
 
@@ -377,7 +381,7 @@ Cada paso termina registrando sus comandos en `main.py` y ejecutando `--help` de
 
 ## Criterios de aceptación
 
-- [ ] `core/validations.py` define `safe_opcion`, `safe_id` y `safe_uuid`, y cada una lanza `MyNotValidParamError` con un valor inválido.
+- [ ] `core/validations.py` define `safe_opcion`, `safe_opcion_int`, `safe_id` y `safe_uuid`, y cada una lanza `MyNotValidParamError` con un valor inválido.
 - [ ] Existen los 29 archivos `commands/<modelo>.py` listados en el plan.
 - [ ] `main.py` registra los 29 comandos con su nombre con guiones, en orden alfabético.
 - [ ] `uv run src/pjecz_hercules_cli_typer/main.py <comando> consultar --help` muestra `--offset`, `--limit` y exactamente los filtros de su tabla en este spec, para los 29 comandos.

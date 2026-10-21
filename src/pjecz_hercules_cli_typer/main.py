@@ -7,6 +7,11 @@ import sys
 from rich.console import Console
 from typer import Typer
 
+from pjecz_hercules_cli_typer.commands.arc_documentos import app as arc_documentos_app
+from pjecz_hercules_cli_typer.commands.arc_documentos_tipos import app as arc_documentos_tipos_app
+from pjecz_hercules_cli_typer.commands.arc_juzgados_extintos import app as arc_juzgados_extintos_app
+from pjecz_hercules_cli_typer.commands.arc_remesas import app as arc_remesas_app
+from pjecz_hercules_cli_typer.commands.arc_remesas_documentos import app as arc_remesas_documentos_app
 from pjecz_hercules_cli_typer.commands.autoridades import app as autoridades_app
 from pjecz_hercules_cli_typer.commands.distritos import app as distritos_app
 from pjecz_hercules_cli_typer.commands.edictos import app as edictos_app
@@ -25,6 +30,11 @@ from pjecz_hercules_cli_typer.commands.usuarios_roles import app as usuarios_rol
 from pjecz_hercules_cli_typer.core.exceptions import MyNotValidParamError
 
 app = Typer()
+app.add_typer(arc_documentos_app, name="arc-documentos")
+app.add_typer(arc_documentos_tipos_app, name="arc-documentos-tipos")
+app.add_typer(arc_juzgados_extintos_app, name="arc-juzgados-extintos")
+app.add_typer(arc_remesas_app, name="arc-remesas")
+app.add_typer(arc_remesas_documentos_app, name="arc-remesas-documentos")
 app.add_typer(autoridades_app, name="autoridades")
 app.add_typer(distritos_app, name="distritos")
 app.add_typer(edictos_app, name="edictos")
