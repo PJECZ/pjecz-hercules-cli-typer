@@ -8,7 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
+from pjecz_hercules_cli_typer.core.validations import safe_clave, safe_string
 from pjecz_hercules_cli_typer.models.materias import Materia
 from pjecz_hercules_cli_typer.models.materias_tipos_juicios import MateriaTipoJuicio
 
@@ -34,11 +34,9 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [MateriaTipoJuicio.estatus == "A", Materia.estatus == "A"]
-    materia_clave = safe_clave(materia_clave)
-    if materia_clave:
+    if materia_clave and (materia_clave := safe_clave(materia_clave)):
         where_clauses.append(Materia.clave == materia_clave)
-    descripcion = safe_string(descripcion, save_enie=True)
-    if descripcion:
+    if descripcion and (descripcion := safe_string(descripcion)):
         where_clauses.append(MateriaTipoJuicio.descripcion.like("%" + descripcion + "%"))
 
     # Sentencia

@@ -8,8 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_string
-from pjecz_hercules_cli_typer.core.validations import validar_nivel
+from pjecz_hercules_cli_typer.core.validations import safe_nivel, safe_string
 from pjecz_hercules_cli_typer.models.modulos import Modulo
 from pjecz_hercules_cli_typer.models.permisos import Permiso
 from pjecz_hercules_cli_typer.models.roles import Rol
@@ -29,10 +28,6 @@ def consultar(
     console = Console()
     console.print("Consultando permisos...")
 
-    # Validar el filtro por nivel (valores permitidos: 1 a 4)
-    if nivel is not None:
-        validar_nivel(nivel)
-
     # Preparar tabla
     tabla = Table(title="Permisos")
     tabla.add_column("Rol", header_style="green")
@@ -41,13 +36,12 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [Permiso.estatus == "A", Modulo.estatus == "A", Rol.estatus == "A"]
-    rol_nombre = safe_string(rol_nombre)
-    if rol_nombre:
+    if rol_nombre and (rol_nombre := safe_string(rol_nombre)):
         where_clauses.append(Rol.nombre.like("%" + rol_nombre + "%"))
-    modulo_nombre = safe_string(modulo_nombre)
-    if modulo_nombre:
+    if modulo_nombre and (modulo_nombre := safe_string(modulo_nombre)):
         where_clauses.append(Modulo.nombre.like("%" + modulo_nombre + "%"))
     if nivel is not None:
+        safe_nivel(nivel)
         where_clauses.append(Permiso.nivel == nivel)
 
     # Sentencia

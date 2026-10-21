@@ -8,8 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
-from pjecz_hercules_cli_typer.core.validations import validar_fecha
+from pjecz_hercules_cli_typer.core.validations import safe_clave, safe_expediente, safe_fecha, safe_string
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.edictos import Edicto
 
@@ -42,21 +41,17 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [Edicto.estatus == "A", Autoridad.estatus == "A"]
-    autoridad_clave = safe_clave(autoridad_clave)
-    if autoridad_clave:
+    if autoridad_clave and (autoridad_clave := safe_clave(autoridad_clave)):
         where_clauses.append(Autoridad.clave == autoridad_clave)
-    if fecha_desde:
-        where_clauses.append(Edicto.fecha >= validar_fecha(fecha_desde))
-    if fecha_hasta:
-        where_clauses.append(Edicto.fecha <= validar_fecha(fecha_hasta))
-    expediente = safe_string(expediente)
-    if expediente:
-        where_clauses.append(Edicto.expediente.like("%" + expediente + "%"))
-    numero_publicacion = safe_string(numero_publicacion)
-    if numero_publicacion:
+    if fecha_desde and (desde := safe_fecha(fecha_desde)):
+        where_clauses.append(Edicto.fecha >= desde)
+    if fecha_hasta and (hasta := safe_fecha(fecha_hasta)):
+        where_clauses.append(Edicto.fecha <= hasta)
+    if expediente and (expediente := safe_expediente(expediente)):
+        where_clauses.append(Edicto.expediente == expediente)
+    if numero_publicacion and (numero_publicacion := safe_string(numero_publicacion)):
         where_clauses.append(Edicto.numero_publicacion.like("%" + numero_publicacion + "%"))
-    descripcion = safe_string(descripcion, save_enie=True)
-    if descripcion:
+    if descripcion and (descripcion := safe_string(descripcion)):
         where_clauses.append(Edicto.descripcion.like("%" + descripcion + "%"))
 
     # Sentencia

@@ -23,8 +23,8 @@ class Usuario(Base):
     # Claves foráneas
     autoridad_id: Mapped[int] = mapped_column(ForeignKey("autoridades.id"))
     autoridad: Mapped["Autoridad"] = relationship(back_populates="usuarios")
-    #oficina_id: Mapped[int] = mapped_column(ForeignKey("oficinas.id"))
-    #oficina: Mapped["Oficina"] = relationship(back_populates="usuarios")
+    oficina_id: Mapped[int] = mapped_column(ForeignKey("oficinas.id"))
+    oficina: Mapped["Oficina"] = relationship(back_populates="usuarios")
 
     # Columnas
     email: Mapped[str] = mapped_column(String(256), unique=True, index=True)
@@ -40,8 +40,10 @@ class Usuario(Base):
     contrasena: Mapped[Optional[str]] = mapped_column(String(256))
 
     # Hijos
+    arc_remesas: Mapped[list["ArcRemesa"]] = relationship(back_populates="usuario_asignado")
     ofi_documentos: Mapped[list["OfiDocumento"]] = relationship(back_populates="usuario")
     ofi_documentos_destinatarios: Mapped[list["OfiDocumentoDestinatario"]] = relationship(back_populates="usuario")
+    soportes_tickets: Mapped[list["SoporteTicket"]] = relationship(back_populates="usuario")
     usuarios_roles: Mapped[list["UsuarioRol"]] = relationship(back_populates="usuario")
 
     # Propiedades

@@ -8,7 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_email, safe_string
+from pjecz_hercules_cli_typer.core.validations import safe_clave, safe_email, safe_string
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.ofi_documentos import OfiDocumento
 from pjecz_hercules_cli_typer.models.usuarios import Usuario
@@ -43,14 +43,11 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [OfiDocumento.estatus == "A", Usuario.estatus == "A", Autoridad.estatus == "A"]
-    autoridad_clave = safe_clave(autoridad_clave)
-    if autoridad_clave:
+    if autoridad_clave and (autoridad_clave := safe_clave(autoridad_clave)):
         where_clauses.append(Autoridad.clave == autoridad_clave)
-    usuario_email = safe_email(usuario_email, search_fragment=True)
-    if usuario_email:
-        where_clauses.append(Usuario.email.like("%" + usuario_email + "%"))
-    descripcion = safe_string(descripcion, save_enie=True)
-    if descripcion:
+    if usuario_email and (usuario_email := safe_email(usuario_email)):
+        where_clauses.append(Usuario.email == usuario_email)
+    if descripcion and (descripcion := safe_string(descripcion)):
         where_clauses.append(OfiDocumento.descripcion.like("%" + descripcion + "%"))
 
     # Sentencia

@@ -8,8 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_clave, safe_string
-from pjecz_hercules_cli_typer.core.validations import validar_fecha
+from pjecz_hercules_cli_typer.core.validations import safe_clave, safe_fecha, safe_string
 from pjecz_hercules_cli_typer.models.autoridades import Autoridad
 from pjecz_hercules_cli_typer.models.listas_de_acuerdos import ListaDeAcuerdo
 
@@ -37,15 +36,13 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [ListaDeAcuerdo.estatus == "A", Autoridad.estatus == "A"]
-    autoridad_clave = safe_clave(autoridad_clave)
-    if autoridad_clave:
+    if autoridad_clave and (autoridad_clave := safe_clave(autoridad_clave)):
         where_clauses.append(Autoridad.clave == autoridad_clave)
-    if fecha_desde:
-        where_clauses.append(ListaDeAcuerdo.fecha >= validar_fecha(fecha_desde))
-    if fecha_hasta:
-        where_clauses.append(ListaDeAcuerdo.fecha <= validar_fecha(fecha_hasta))
-    descripcion = safe_string(descripcion, save_enie=True)
-    if descripcion:
+    if fecha_desde and (desde := safe_fecha(fecha_desde)):
+        where_clauses.append(ListaDeAcuerdo.fecha >= desde)
+    if fecha_hasta and (hasta := safe_fecha(fecha_hasta)):
+        where_clauses.append(ListaDeAcuerdo.fecha <= hasta)
+    if descripcion and (descripcion := safe_string(descripcion)):
         where_clauses.append(ListaDeAcuerdo.descripcion.like("%" + descripcion + "%"))
 
     # Sentencia

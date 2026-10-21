@@ -8,7 +8,7 @@ from sqlalchemy import select
 from typer import Typer
 
 from pjecz_hercules_cli_typer.core.database import session_scope
-from pjecz_hercules_cli_typer.core.safe_string import safe_string
+from pjecz_hercules_cli_typer.core.validations import safe_string
 from pjecz_hercules_cli_typer.models.modulos import Modulo
 
 app = Typer(help="Módulos")
@@ -35,8 +35,7 @@ def consultar(
 
     # Cláusulas where
     where_clauses = [Modulo.estatus == "A"]
-    nombre = safe_string(nombre, save_enie=True)
-    if nombre:
+    if nombre and (nombre := safe_string(nombre)):
         where_clauses.append(Modulo.nombre.like("%" + nombre + "%"))
     if en_navegacion is not None:
         where_clauses.append(Modulo.en_navegacion == en_navegacion)
