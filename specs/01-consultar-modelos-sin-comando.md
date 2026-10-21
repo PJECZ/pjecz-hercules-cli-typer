@@ -335,13 +335,6 @@ Tacha o agrega filas para ajustar los filtros antes de aprobar el spec.
 
 #### Otros
 
-**`ofi-documentos-adjuntos`** — join `OfiDocumento`; orden `descripcion`. Salida: Oficio ID, Descripción, Archivo.
-
-| Opción CLI | Columna | Validación | Comparación |
-| ---------- | ------- | ---------- | ----------- |
-| `--ofi-documento-id` | `OfiDocumentoAdjunto.ofi_documento_id` | `safe_uuid` | `==` |
-| `--descripcion` | `OfiDocumentoAdjunto.descripcion` | `safe_string` | `like` |
-
 **`redams`** — join `Autoridad`; orden `fecha.desc()`. Salida: Fecha, Autoridad, Expediente, Nombre.
 
 | Opción CLI | Columna | Validación | Comparación |
