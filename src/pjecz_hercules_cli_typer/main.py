@@ -39,6 +39,7 @@ from pjecz_hercules_cli_typer.commands.materias_tipos_juicios import app as mate
 from pjecz_hercules_cli_typer.commands.modulos import app as modulos_app
 from pjecz_hercules_cli_typer.commands.municipios import app as municipios_app
 from pjecz_hercules_cli_typer.commands.ofi_documentos import app as ofi_documentos_app
+from pjecz_hercules_cli_typer.commands.ofi_documentos_adjuntos import app as ofi_documentos_adjuntos_app
 from pjecz_hercules_cli_typer.commands.ofi_documentos_destinatarios import app as ofi_documentos_destinatarios_app
 from pjecz_hercules_cli_typer.commands.oficinas import app as oficinas_app
 from pjecz_hercules_cli_typer.commands.permisos import app as permisos_app
@@ -83,6 +84,7 @@ app.add_typer(materias_tipos_de_juicios_app, name="materias-tipos-de-juicios")
 app.add_typer(modulos_app, name="modulos")
 app.add_typer(municipios_app, name="municipios")
 app.add_typer(ofi_documentos_app, name="ofi-documentos")
+app.add_typer(ofi_documentos_adjuntos_app, name="ofi-documentos-adjuntos")
 app.add_typer(ofi_documentos_destinatarios_app, name="ofi-documentos-destinatarios")
 app.add_typer(oficinas_app, name="oficinas")
 app.add_typer(permisos_app, name="permisos")
