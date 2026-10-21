@@ -43,6 +43,8 @@ from pjecz_hercules_cli_typer.commands.ofi_documentos_adjuntos import app as ofi
 from pjecz_hercules_cli_typer.commands.ofi_documentos_destinatarios import app as ofi_documentos_destinatarios_app
 from pjecz_hercules_cli_typer.commands.oficinas import app as oficinas_app
 from pjecz_hercules_cli_typer.commands.permisos import app as permisos_app
+from pjecz_hercules_cli_typer.commands.redams import app as redams_app
+from pjecz_hercules_cli_typer.commands.repsvm_agresores import app as repsvm_agresores_app
 from pjecz_hercules_cli_typer.commands.roles import app as roles_app
 from pjecz_hercules_cli_typer.commands.sentencias import app as sentencias_app
 from pjecz_hercules_cli_typer.commands.soportes_categorias import app as soportes_categorias_app
@@ -88,6 +90,8 @@ app.add_typer(ofi_documentos_adjuntos_app, name="ofi-documentos-adjuntos")
 app.add_typer(ofi_documentos_destinatarios_app, name="ofi-documentos-destinatarios")
 app.add_typer(oficinas_app, name="oficinas")
 app.add_typer(permisos_app, name="permisos")
+app.add_typer(redams_app, name="redams")
+app.add_typer(repsvm_agresores_app, name="repsvm-agresores")
 app.add_typer(roles_app, name="roles")
 app.add_typer(sentencias_app, name="sentencias")
 app.add_typer(soportes_categorias_app, name="soportes-categorias")
