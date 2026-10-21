@@ -13,6 +13,10 @@ from pjecz_hercules_cli_typer.commands.arc_juzgados_extintos import app as arc_j
 from pjecz_hercules_cli_typer.commands.arc_remesas import app as arc_remesas_app
 from pjecz_hercules_cli_typer.commands.arc_remesas_documentos import app as arc_remesas_documentos_app
 from pjecz_hercules_cli_typer.commands.autoridades import app as autoridades_app
+from pjecz_hercules_cli_typer.commands.dgt_depositos import app as dgt_depositos_app
+from pjecz_hercules_cli_typer.commands.dgt_plataformas import app as dgt_plataformas_app
+from pjecz_hercules_cli_typer.commands.dgt_rutas import app as dgt_rutas_app
+from pjecz_hercules_cli_typer.commands.dgt_tipos import app as dgt_tipos_app
 from pjecz_hercules_cli_typer.commands.distritos import app as distritos_app
 from pjecz_hercules_cli_typer.commands.domicilios import app as domicilios_app
 from pjecz_hercules_cli_typer.commands.edictos import app as edictos_app
@@ -44,6 +48,10 @@ app.add_typer(arc_juzgados_extintos_app, name="arc-juzgados-extintos")
 app.add_typer(arc_remesas_app, name="arc-remesas")
 app.add_typer(arc_remesas_documentos_app, name="arc-remesas-documentos")
 app.add_typer(autoridades_app, name="autoridades")
+app.add_typer(dgt_depositos_app, name="dgt-depositos")
+app.add_typer(dgt_plataformas_app, name="dgt-plataformas")
+app.add_typer(dgt_rutas_app, name="dgt-rutas")
+app.add_typer(dgt_tipos_app, name="dgt-tipos")
 app.add_typer(distritos_app, name="distritos")
 app.add_typer(domicilios_app, name="domicilios")
 app.add_typer(edictos_app, name="edictos")
