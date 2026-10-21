@@ -17,6 +17,8 @@ from pjecz_hercules_cli_typer.commands.distritos import app as distritos_app
 from pjecz_hercules_cli_typer.commands.domicilios import app as domicilios_app
 from pjecz_hercules_cli_typer.commands.edictos import app as edictos_app
 from pjecz_hercules_cli_typer.commands.estados import app as estados_app
+from pjecz_hercules_cli_typer.commands.funcionarios import app as funcionarios_app
+from pjecz_hercules_cli_typer.commands.funcionarios_oficinas import app as funcionarios_oficinas_app
 from pjecz_hercules_cli_typer.commands.glosas import app as glosas_app
 from pjecz_hercules_cli_typer.commands.listas_de_acuerdos import app as listas_de_acuerdos_app
 from pjecz_hercules_cli_typer.commands.materias import app as materias_app
@@ -29,6 +31,8 @@ from pjecz_hercules_cli_typer.commands.oficinas import app as oficinas_app
 from pjecz_hercules_cli_typer.commands.permisos import app as permisos_app
 from pjecz_hercules_cli_typer.commands.roles import app as roles_app
 from pjecz_hercules_cli_typer.commands.sentencias import app as sentencias_app
+from pjecz_hercules_cli_typer.commands.soportes_categorias import app as soportes_categorias_app
+from pjecz_hercules_cli_typer.commands.soportes_tickets import app as soportes_tickets_app
 from pjecz_hercules_cli_typer.commands.usuarios import app as usuarios_app
 from pjecz_hercules_cli_typer.commands.usuarios_roles import app as usuarios_roles_app
 from pjecz_hercules_cli_typer.core.exceptions import MyNotValidParamError
@@ -44,6 +48,8 @@ app.add_typer(distritos_app, name="distritos")
 app.add_typer(domicilios_app, name="domicilios")
 app.add_typer(edictos_app, name="edictos")
 app.add_typer(estados_app, name="estados")
+app.add_typer(funcionarios_app, name="funcionarios")
+app.add_typer(funcionarios_oficinas_app, name="funcionarios-oficinas")
 app.add_typer(glosas_app, name="glosas")
 app.add_typer(listas_de_acuerdos_app, name="listas-de-acuerdos")
 app.add_typer(materias_app, name="materias")
@@ -56,6 +62,8 @@ app.add_typer(oficinas_app, name="oficinas")
 app.add_typer(permisos_app, name="permisos")
 app.add_typer(roles_app, name="roles")
 app.add_typer(sentencias_app, name="sentencias")
+app.add_typer(soportes_categorias_app, name="soportes-categorias")
+app.add_typer(soportes_tickets_app, name="soportes-tickets")
 app.add_typer(usuarios_app, name="usuarios")
 app.add_typer(usuarios_roles_app, name="usuarios-roles")
 
