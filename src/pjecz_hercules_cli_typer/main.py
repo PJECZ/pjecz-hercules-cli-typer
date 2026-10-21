@@ -25,6 +25,11 @@ from pjecz_hercules_cli_typer.commands.distritos import app as distritos_app
 from pjecz_hercules_cli_typer.commands.domicilios import app as domicilios_app
 from pjecz_hercules_cli_typer.commands.edictos import app as edictos_app
 from pjecz_hercules_cli_typer.commands.estados import app as estados_app
+from pjecz_hercules_cli_typer.commands.exh_areas import app as exh_areas_app
+from pjecz_hercules_cli_typer.commands.exh_exhortos import app as exh_exhortos_app
+from pjecz_hercules_cli_typer.commands.exh_exhortos_archivos import app as exh_exhortos_archivos_app
+from pjecz_hercules_cli_typer.commands.exh_exhortos_partes import app as exh_exhortos_partes_app
+from pjecz_hercules_cli_typer.commands.exh_tipos_diligencias import app as exh_tipos_diligencias_app
 from pjecz_hercules_cli_typer.commands.funcionarios import app as funcionarios_app
 from pjecz_hercules_cli_typer.commands.funcionarios_oficinas import app as funcionarios_oficinas_app
 from pjecz_hercules_cli_typer.commands.glosas import app as glosas_app
@@ -64,6 +69,11 @@ app.add_typer(distritos_app, name="distritos")
 app.add_typer(domicilios_app, name="domicilios")
 app.add_typer(edictos_app, name="edictos")
 app.add_typer(estados_app, name="estados")
+app.add_typer(exh_areas_app, name="exh-areas")
+app.add_typer(exh_exhortos_app, name="exh-exhortos")
+app.add_typer(exh_exhortos_archivos_app, name="exh-exhortos-archivos")
+app.add_typer(exh_exhortos_partes_app, name="exh-exhortos-partes")
+app.add_typer(exh_tipos_diligencias_app, name="exh-tipos-diligencias")
 app.add_typer(funcionarios_app, name="funcionarios")
 app.add_typer(funcionarios_oficinas_app, name="funcionarios-oficinas")
 app.add_typer(glosas_app, name="glosas")

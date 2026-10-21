@@ -302,7 +302,7 @@ Tacha o agrega filas para ajustar los filtros antes de aprobar el spec.
 | `--autoridad-clave` | `Autoridad.clave` | `safe_clave` | `==` |
 | `--exh-area-clave` | `ExhArea.clave` | `safe_clave` | `==` |
 | `--exh-tipo-diligencia-clave` | `ExhTipoDiligencia.clave` | `safe_clave` | `==` |
-| `--exhorto-origen-id` | `ExhExhorto.exhorto_origen_id` | `safe_string(max_len=64)` | `==` |
+| `--exhorto-origen-id` | `func.upper(ExhExhorto.exhorto_origen_id)` | `safe_string(max_len=64)` | `==` |
 | `--numero-expediente-origen` | `ExhExhorto.numero_expediente_origen` | `safe_string` | `like` |
 | `--juzgado-origen-nombre` | `ExhExhorto.juzgado_origen_nombre` | `safe_string` | `like` |
 | `--materia-clave` | `ExhExhorto.materia_clave` | `safe_clave(max_len=32)` | `==` |
@@ -413,6 +413,7 @@ Cada paso termina registrando sus comandos en `main.py` y ejecutando `--help` de
 - **No:** tipos nativos `uuid.UUID` de Typer. Su mensaje de error difiere del resto del CLI.
 - **Sí:** en columnas `datetime`, `*_hasta` incluye el día completo (`< hasta + 1 día`).
 - **No:** comparar `datetime <= date`. Excluiría los registros del mismo día después de las 00:00.
+- **Sí:** `--exhorto-origen-id` compara contra `func.upper(...)`. Lo envía otro Poder Judicial y puede traer minúsculas; `safe_string` siempre convierte a mayúsculas.
 - **Sí:** el nombre del archivo del comando es el del modelo (`redams.py`, aunque la tabla se llama `redam`).
 
 ---
