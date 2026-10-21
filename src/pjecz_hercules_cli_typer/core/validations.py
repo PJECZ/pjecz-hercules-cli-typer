@@ -93,8 +93,9 @@ def safe_tipo_juicio(tipo_juicio: str, tipos_juicios: Container[str]) -> None:
 
 def safe_opcion(valor: str, opciones: Container) -> str:
     """Validar que el valor sea una de las opciones del catálogo del modelo"""
-    if valor == "":
+    if valor.strip() == "":
         return ""
+    valor = safe_string(valor)
     if valor not in opciones:
         raise MyNotValidParamError("La opción no es válida")
     return valor
